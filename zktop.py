@@ -17,6 +17,7 @@
 # limitations under the License.
 
 from optparse import OptionParser # TODO use argparse instead
+from pathlib import Path
 
 import threading
 import sys
@@ -41,11 +42,12 @@ import curses
     
 
 ZK_DEFAULT_PORT = 2181
+ZK_DEFAULT_CFG = "/etc/zookeeper/conf/zoo.cfg"
 
 usage = "usage: %prog [options]"
 parser = OptionParser(usage=usage)
 parser.add_option("", "--servers",
-                  dest="servers", default="localhost:%s" % ZK_DEFAULT_PORT,
+                  dest="servers", default=None,
                   help="comma separated list of host:port (default localhost:%d)" % ZK_DEFAULT_PORT)
 parser.add_option("-n", "--names",
                   action="store_true", dest="names", default=False,
@@ -60,7 +62,7 @@ parser.add_option("-l", "--logfile",
                   dest="logfile", default=None,
                   help="directory in which to place log file, or empty for none")
 parser.add_option("-c", "--config",
-                  dest="configfile", default=None,
+                  dest="configfile", default="%s" % ZK_DEFAULT_CFG,
                   help="zookeeper configuration file to lookup servers from")
 parser.add_option("-t", "--timeout",
                   dest="timeout", default=None,
@@ -72,6 +74,13 @@ if options.logfile:
     LOG.basicConfig(filename=options.logfile, level=getattr(LOG, options.verbosity))
 else:
     LOG.disable(LOG.CRITICAL)
+
+if options.servers:
+    options.configfile=""
+else:
+    if not Path(options.configfile).is_file():
+        options.servers="localhost:%s" % ZK_DEFAULT_PORT
+        options.configfile=""
 
 resized_sig = False
 

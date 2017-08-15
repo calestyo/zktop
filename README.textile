@@ -5,6 +5,7 @@ h1. ZooKeeper top
 h2. Summary
 
 "This project":http://github.com/phunt/zktop provides a unix "top" like utility for ZooKeeper. It is compatible with Python2.6, Python2.7 and Python3.
+With Python2, "pathlib"https://pypi.python.org/pypi/pathlib/ is required to be installed.
 
 h3. Example
 
@@ -62,8 +63,9 @@ Usage: zktop.py [options]
 
 Options:
   -h, --help            show this help message and exit
-  --servers=SERVERS     comma separated list of host:port (default
-                        localhost:2181)
+  --servers=SERVERS     comma separated list of host:port
+                        (default “localhost:2181”, only used if the default
+                        zookeeper configuration file (see --config) is not found)
   -n, --names           resolve session name from ip (default False)
   --fix_330             workaround for a bug in ZK 3.3.0
   -v VERBOSITY, --verbosity=VERBOSITY
@@ -72,7 +74,9 @@ Options:
                         directory in which to place log file, or empty for
                         none
   -c CONFIGFILE, --config=CONFIGFILE
-                        zookeeper configuration file to lookup servers from
+                        zookeeper configuration file to lookup servers from,
+                        ignored if --servers is explicitly specified
+                        (default “/etc/zookeeper/conf/zoo.cfg”)
 </pre>
 
 --fix_330 works around a bug in ZooKeeper 3.3.0, it is only necessary if running the server against that version of ZooKeeper.
